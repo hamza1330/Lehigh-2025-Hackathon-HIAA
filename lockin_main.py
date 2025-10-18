@@ -5,6 +5,7 @@ Run with: python lockin_main.py
 """
 
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime, timedelta
 import uvicorn
 import json
@@ -16,6 +17,15 @@ app = FastAPI(
     title="LockIn API",
     description="Social Scheduling + Focus Lock for Real Productivity",
     version="1.0.0"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
 )
 
 # In-memory storage for demo
