@@ -25,3 +25,6 @@ cd Lehigh-2025-Hackathon-HIAA
 - Frontend: HTML5, CSS3, JavaScript
 - Deployment: AWS EC2, Nginx
 - Version Control: Git, GitHub
+
+### Test Update
+This is a test commit to verify git functionality.
