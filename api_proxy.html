@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>LockIn API Proxy</title>
+</head>
+<body>
+    <h1>🔒 LockIn API</h1>
+    <p>API is running on the server. Use these endpoints:</p>
+    <ul>
+        <li><a href="/api/">Root API</a></li>
+        <li><a href="/api/health">Health Check</a></li>
+        <li><a href="/api/sessions/">Sessions</a></li>
+        <li><a href="/api/users/">Users</a></li>
+        <li><a href="/api/presence/">Presence</a></li>
+    </ul>
+    <script>
+        // Simple API proxy
+        const API_BASE = 'http://localhost:8000';
+        
+        async function testAPI() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                document.body.innerHTML += `<p>API Status: ${JSON.stringify(data)}</p>`;
+            } catch (error) {
+                document.body.innerHTML += `<p>API Error: ${error.message}</p>`;
+            }
+        }
+        
+        testAPI();
+    </script>
+</body>
+</html>
