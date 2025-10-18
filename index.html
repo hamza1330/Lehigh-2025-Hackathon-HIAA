@@ -3,69 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lehigh 2025 Hackathon - HIAA</title>
+    <title>GoalTracker - Social Accountability App</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            line-height: 1.6;
         }
+        
         .container {
-            text-align: center;
-            max-width: 600px;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 2rem;
         }
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
         }
-        .subtitle {
-            font-size: 1.2rem;
+        
+        .header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .header .subtitle {
+            font-size: 1.5rem;
             margin-bottom: 2rem;
             opacity: 0.9;
         }
-        .card {
+        
+        .header .tagline {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .feature-card {
             background: rgba(255,255,255,0.1);
-            padding: 1.5rem;
+            padding: 2rem;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #00ff88;
+        }
+        
+        .feature-card p {
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .feature-list li:before {
+            content: "✓ ";
+            color: #00ff88;
+            font-weight: bold;
+        }
+        
+        .cta-section {
+            text-align: center;
+            margin: 4rem 0;
+            padding: 3rem;
+            background: rgba(0,255,136,0.1);
+            border-radius: 20px;
+            border: 2px solid rgba(0,255,136,0.3);
+        }
+        
+        .cta-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+        
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #00ff88, #00d4ff);
+            color: #000;
+        }
+        
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .tech-stack {
+            margin: 3rem 0;
+            text-align: center;
+        }
+        
+        .tech-stack h3 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #00d4ff;
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .tech-item {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
             border-radius: 10px;
-            margin: 1rem 0;
             backdrop-filter: blur(10px);
         }
-        .status {
-            background: rgba(0,255,0,0.1);
-            border: 2px solid rgba(0,255,0,0.3);
+        
+        .footer {
+            text-align: center;
+            margin-top: 4rem;
+            padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.2);
         }
-        a {
-            color: #00ff00;
-            text-decoration: none;
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Lehigh 2025 Hackathon</h1>
-        <p class="subtitle">Healthcare Innovation & AI Applications</p>
-        
-        <div class="card status">
-            <h2>✅ Project Deployed!</h2>
-            <p><strong>Live Site:</strong> <a href="http://54.90.157.246">http://54.90.157.246</a></p>
-            <p>Ready for development</p>
+        <div class="header">
+            <h1>🎯 GoalTracker</h1>
+            <p class="subtitle">Social Accountability App</p>
+            <p class="tagline">Transform your goals into achievements with AI-powered photo verification, group challenges, and competitive leaderboards.</p>
         </div>
         
-        <div class="card">
-            <h3>🛠️ Development</h3>
-            <p>Edit files locally → Run <code>./deploy.sh</code> → View live site</p>
+        <div class="features-grid">
+            <div class="feature-card">
+                <h3>📸 AI Photo Verification</h3>
+                <p>Advanced computer vision ensures your progress is real and verified.</p>
+                <ul class="feature-list">
+                    <li>AWS Rekognition integration</li>
+                    <li>Automatic goal category detection</li>
+                    <li>Fraud prevention system</li>
+                    <li>Progress tracking through images</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>👥 Social Accountability</h3>
+                <p>Join groups, create challenges, and stay motivated with friends.</p>
+                <ul class="feature-list">
+                    <li>Private and public groups</li>
+                    <li>Group challenges and competitions</li>
+                    <li>Real-time progress sharing</li>
+                    <li>Accountability partners</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🏆 Leaderboards & Gamification</h3>
+                <p>Compete with others and earn points for consistency and achievements.</p>
+                <ul class="feature-list">
+                    <li>Global and group leaderboards</li>
+                    <li>Smart scoring algorithm</li>
+                    <li>Achievement badges</li>
+                    <li>Streak tracking and bonuses</li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <h3>🎯 Smart Goal Management</h3>
+                <p>Create, track, and achieve your goals with intelligent reminders.</p>
+                <ul class="feature-list">
+                    <li>SMART goal framework</li>
+                    <li>Custom categories and tags</li>
+                    <li>Calendar integration</li>
+                    <li>Location-based check-ins</li>
+                </ul>
+            </div>
         </div>
         
-        <div class="card">
-            <h3>📁 Repository</h3>
-            <p><a href="https://github.com/hamza1330/Lehigh-2025-Hackathon-HIAA">GitHub Repository</a></p>
+        <div class="cta-section">
+            <h2>🚀 Ready to Transform Your Goals?</h2>
+            <p>Join thousands of users who are already achieving their dreams with GoalTracker.</p>
+            <div class="cta-buttons">
+                <a href="/login" class="btn btn-primary">Get Started</a>
+                <a href="/register" class="btn btn-secondary">Sign Up Free</a>
+            </div>
+        </div>
+        
+        <div class="tech-stack">
+            <h3>🛠️ Built with Modern Technology</h3>
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <strong>Frontend</strong><br>
+                    React, React Router, Framer Motion
+                </div>
+                <div class="tech-item">
+                    <strong>Backend</strong><br>
+                    Node.js, Express, Socket.io
+                </div>
+                <div class="tech-item">
+                    <strong>Database</strong><br>
+                    MongoDB, Mongoose
+                </div>
+                <div class="tech-item">
+                    <strong>AWS Services</strong><br>
+                    S3, Rekognition, Lambda, EC2
+                </div>
+                <div class="tech-item">
+                    <strong>Real-time</strong><br>
+                    WebSocket, Socket.io
+                </div>
+                <div class="tech-item">
+                    <strong>Authentication</strong><br>
+                    JWT, bcrypt
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Lehigh 2025 Hackathon - Healthcare Innovation & AI Applications</strong></p>
+            <p>🏆 Live Demo: <a href="http://54.90.157.246" style="color: #00ff88;">http://54.90.157.246</a></p>
+            <p>📁 GitHub: <a href="https://github.com/hamza1330/Lehigh-2025-Hackathon-HIAA" style="color: #00d4ff;">Repository</a></p>
         </div>
     </div>
 </body>
