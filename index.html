@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🎯 GoalTracker - Social Accountability App</title>
+    <title>🔒 LockIn - Social Scheduling + Focus Lock</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -127,16 +127,17 @@
 </head>
 <body>
     <div class="header">
-        <h1>🎯 GoalTracker</h1>
-        <p class="subtitle">Social Accountability App with AI Photo Verification</p>
-        <p><strong>Lehigh 2025 Hackathon - Healthcare Innovation & AI Applications</strong></p>
+        <h1>🔒 LockIn</h1>
+        <p class="subtitle">Social Scheduling + Focus Lock for Real Productivity</p>
+        <p class="tagline">"Plan together. Lock in together. Win together."</p>
+        <p><strong>Lehigh 2025 Hackathon - Productivity & Accountability</strong></p>
     </div>
 
     <div class="container">
         <div class="grid">
             <!-- API Status Card -->
             <div class="card api-card">
-                <h3>🚀 API Status</h3>
+                <h3>🚀 LockIn API Status</h3>
                 <div class="api-status">
                     <div class="status-indicator"></div>
                     <span>FastAPI Backend Running</span>
@@ -144,32 +145,33 @@
                 <p><strong>API URL:</strong> <a href="http://localhost:8000" target="_blank">http://localhost:8000</a></p>
                 <p><strong>Documentation:</strong> <a href="http://localhost:8000/docs" target="_blank">Interactive API Docs</a></p>
                 <div class="data-display" id="apiData">
-                    <div>Loading API data...</div>
+                    <div>Loading LockIn API data...</div>
                 </div>
                 <a href="http://localhost:8000/docs" class="btn" target="_blank">View API Docs</a>
             </div>
 
             <!-- Demo Data Card -->
             <div class="card demo-card">
-                <h3>📊 Demo Data</h3>
-                <p>Click to load sample data and test the API</p>
+                <h3>📊 LockIn Demo</h3>
+                <p>Load demo groups, sessions, and test Focus Lock features</p>
                 <div class="data-display" id="demoData">
                     <div>No demo data loaded yet</div>
                 </div>
                 <button onclick="loadDemoData()" class="btn">Load Demo Data</button>
-                <button onclick="fetchGoals()" class="btn">Fetch Goals</button>
+                <button onclick="fetchSessions()" class="btn">Fetch Sessions</button>
+                <button onclick="fetchPresence()" class="btn">Check Active Users</button>
             </div>
 
             <!-- Features Card -->
             <div class="card">
-                <h3>✨ Key Features</h3>
+                <h3>✨ LockIn Features</h3>
                 <ul class="feature-list">
-                    <li>AI Photo Verification</li>
-                    <li>Social Accountability</li>
-                    <li>Goal Tracking</li>
-                    <li>Real-time Updates</li>
-                    <li>Healthcare Focus</li>
-                    <li>Group Challenges</li>
+                    <li>Group Creation & Shared Goals</li>
+                    <li>Lock-In Sessions (Social Scheduling)</li>
+                    <li>Clock-In/Clock-Out Timer</li>
+                    <li>Focus Lock 🔒 (Distraction Prevention)</li>
+                    <li>Real-time Group Presence</li>
+                    <li>Progress Dashboard & Analytics</li>
                 </ul>
             </div>
 
@@ -190,14 +192,14 @@
 
             <!-- Tech Stack Card -->
             <div class="card">
-                <h3>🛠️ Technology Stack</h3>
+                <h3>🛠️ LockIn Tech Stack</h3>
                 <ul class="feature-list">
                     <li>FastAPI (Python Backend)</li>
-                    <li>React (Frontend)</li>
-                    <li>AWS RDS (Database)</li>
-                    <li>AWS Rekognition (AI)</li>
-                    <li>Socket.io (Real-time)</li>
-                    <li>JWT Authentication</li>
+                    <li>React Native (Mobile App)</li>
+                    <li>WebSocket (Real-time Presence)</li>
+                    <li>Focus Lock (Distraction Prevention)</li>
+                    <li>Push Notifications</li>
+                    <li>Social Scheduling System</li>
                 </ul>
             </div>
         </div>
@@ -214,12 +216,13 @@
                 const data = await response.json();
                 document.getElementById('apiData').innerHTML = `
                     <div><strong>Status:</strong> ${data.status}</div>
+                    <div><strong>Tagline:</strong> ${data.tagline}</div>
                     <div><strong>Database:</strong> ${data.database}</div>
-                    <div><strong>Features:</strong> ${data.features.join(', ')}</div>
+                    <div><strong>Features:</strong> ${data.features.slice(0, 3).join(', ')}...</div>
                 `;
             } catch (error) {
                 document.getElementById('apiData').innerHTML = `
-                    <div style="color: #ff6b6b;">❌ API not accessible</div>
+                    <div style="color: #ff6b6b;">❌ LockIn API not accessible</div>
                     <div>Make sure the FastAPI server is running on port 8000</div>
                 `;
             }
@@ -233,32 +236,52 @@
                 });
                 const data = await response.json();
                 document.getElementById('demoData').innerHTML = `
-                    <div><strong>✅ Demo data loaded!</strong></div>
+                    <div><strong>✅ LockIn demo loaded!</strong></div>
                     <div>Users: ${data.users}</div>
-                    <div>Goals: ${data.goals}</div>
-                    <div>Verifications: ${data.verifications}</div>
+                    <div>Groups: ${data.groups}</div>
+                    <div>Sessions: ${data.sessions}</div>
+                    <div><strong>Features:</strong> ${data.features.slice(0, 2).join(', ')}...</div>
                 `;
             } catch (error) {
                 document.getElementById('demoData').innerHTML = `
-                    <div style="color: #ff6b6b;">❌ Failed to load demo data</div>
+                    <div style="color: #ff6b6b;">❌ Failed to load LockIn demo</div>
                 `;
             }
         }
         
-        // Fetch goals
-        async function fetchGoals() {
+        // Fetch sessions
+        async function fetchSessions() {
             try {
-                const response = await fetch(`${API_BASE}/goals/`);
+                const response = await fetch(`${API_BASE}/sessions/`);
                 const data = await response.json();
                 document.getElementById('demoData').innerHTML = `
-                    <div><strong>📋 Goals (${data.count}):</strong></div>
-                    ${data.goals.map(goal => `
-                        <div>• ${goal.title} (${goal.category})</div>
+                    <div><strong>🔒 Lock-In Sessions (${data.count}):</strong></div>
+                    ${data.sessions.map(session => `
+                        <div>• ${session.title} (${session.tag}) - ${session.status}</div>
                     `).join('')}
                 `;
             } catch (error) {
                 document.getElementById('demoData').innerHTML = `
-                    <div style="color: #ff6b6b;">❌ Failed to fetch goals</div>
+                    <div style="color: #ff6b6b;">❌ Failed to fetch sessions</div>
+                `;
+            }
+        }
+        
+        // Fetch active presence
+        async function fetchPresence() {
+            try {
+                const response = await fetch(`${API_BASE}/presence/`);
+                const data = await response.json();
+                document.getElementById('demoData').innerHTML = `
+                    <div><strong>👥 Active Users (${data.count}):</strong></div>
+                    <div>${data.message}</div>
+                    ${data.active_users.map(user => `
+                        <div>• ${user.name} ${user.avatar} - ${user.focus_lock_enabled ? '🔒 Locked' : '⏱️ Active'}</div>
+                    `).join('')}
+                `;
+            } catch (error) {
+                document.getElementById('demoData').innerHTML = `
+                    <div style="color: #ff6b6b;">❌ Failed to fetch presence</div>
                 `;
             }
         }
