@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lehigh 2025 Hackathon - HIAA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 2rem;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+            backdrop-filter: blur(10px);
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        .feature {
+            background: rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+        .deployment-info {
+            background: rgba(0,255,0,0.1);
+            border: 2px solid rgba(0,255,0,0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Lehigh 2025 Hackathon</h1>
+        <p class="subtitle">HIAA - Healthcare Innovation & AI Applications</p>
+        
+        <div class="status">
+            <h2>✅ Project Successfully Deployed!</h2>
+            <p>Your hackathon project is now running on AWS EC2</p>
+            <p><strong>Server IP:</strong> 54.90.157.246</p>
+            <p><strong>Status:</strong> Online and Ready for Development</p>
+        </div>
+        
+        <div class="deployment-info">
+            <h3>🌐 Live Website</h3>
+            <p><strong>URL:</strong> <a href="http://54.90.157.246" style="color: #00ff00; text-decoration: none;">http://54.90.157.246</a></p>
+            <p>Your project is accessible worldwide!</p>
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>🌐 Web Server</h3>
+                <p>Nginx web server configured and running</p>
+            </div>
+            <div class="feature">
+                <h3>☁️ AWS Cloud</h3>
+                <p>Deployed on AWS EC2 with public access</p>
+            </div>
+            <div class="feature">
+                <h3>🔧 Development Ready</h3>
+                <p>Git repository cloned and ready for development</p>
+            </div>
+            <div class="feature">
+                <h3>📱 Responsive Design</h3>
+                <p>Mobile-friendly and modern UI</p>
+            </div>
+        </div>
+        
+        <div class="status">
+            <h3>Next Steps:</h3>
+            <ul style="text-align: left; display: inline-block;">
+                <li>Start building your hackathon project</li>
+                <li>Add your application files to this directory</li>
+                <li>Configure your specific technology stack</li>
+                <li>Test your application locally and on AWS</li>
+                <li>Deploy updates using git push/pull</li>
+            </ul>
+        </div>
+        
+        <div class="status">
+            <h3>Development Commands:</h3>
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 5px; font-family: monospace; text-align: left;">
+                <p><strong>Connect to server:</strong></p>
+                <p>ssh -i ~/.ssh/BiggerBacks123.pem ec2-user@54.90.157.246</p>
+                <br>
+                <p><strong>Deploy changes:</strong></p>
+                <p>git add . && git commit -m "Update project" && git push</p>
+                <p>ssh -i ~/.ssh/BiggerBacks123.pem ec2-user@54.90.157.246 "cd Lehigh-2025-Hackathon-HIAA && git pull"</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
