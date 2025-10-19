@@ -1,21 +1,36 @@
 import { Stack } from "expo-router";
+import { ThemeProvider, useTheme } from "../theme/ThemeProvider";
 
-export default function RootLayout() {
+function RootStack() {
+  const { colors } = useTheme();
+
   return (
     <Stack
       screenOptions={{
-        headerStyle: { backgroundColor: "#101522" },
-        headerTitleStyle: { color: "#F7F9FC", fontSize: 20 },
-        headerTintColor: "#61E4A8",
-        contentStyle: { backgroundColor: "#101522" },
+        headerStyle: { backgroundColor: colors.backgroundAlt },
+        headerTitleStyle: { color: colors.textPrimary, fontSize: 20 },
+        headerTintColor: colors.accentPrimary,
+        contentStyle: { backgroundColor: colors.background },
       }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="create-account" options={{ title: "Create Account" }} />
       <Stack.Screen
-        name="home"
-        options={{ headerShown: false, contentStyle: { backgroundColor: "#E9F5F0" } }}
+        name="create-account"
+        options={{ title: "Create Account" }}
+      />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="notification/[id]"
+        options={{ title: "Notification" }}
       />
     </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <ThemeProvider>
+      <RootStack />
+    </ThemeProvider>
   );
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -9,6 +9,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { ThemeColors, useTheme } from "../../theme/ThemeProvider";
 
 type GroupSummary = {
   id: string;
@@ -52,6 +53,8 @@ const MOCK_GROUPS: GroupSummary[] = [
 
 export default function Home() {
   const [groups, setGroups] = useState<GroupSummary[]>(MOCK_GROUPS);
+  const { colors } = useTheme();
+  const styles = useMemo(() => createStyles(colors), [colors]);
 
   const handleGroupPress = (group: GroupSummary) => {
     Alert.alert(group.name, "Full group dashboards are on the roadmap.");
@@ -150,107 +153,113 @@ export default function Home() {
   );
 }
 
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#E9F5F0",
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 32,
-  },
-  heading: {
-    fontSize: 30,
-    fontWeight: "700",
-    color: "#0B3B3C",
-    marginBottom: 24,
-  },
-  listContent: {
-    paddingBottom: 16,
-  },
-  groupCard: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: "#0B3B3C",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.08,
-    shadowRadius: 24,
-    elevation: 8,
-  },
-  groupHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginBottom: 4,
-    gap: 12,
-  },
-  groupName: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#0F2239",
-  },
-  groupDetail: {
-    fontSize: 14,
-    color: "#4F5D73",
-    marginTop: 6,
-  },
-  progressTrack: {
-    height: 12,
-    borderRadius: 12,
-    backgroundColor: "#E2ECF4",
-    marginTop: 16,
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    borderRadius: 12,
-    backgroundColor: "#0EA58B",
-  },
-  deleteButton: {
-    paddingHorizontal: 14,
-    paddingVertical: 6,
-    borderRadius: 12,
-    backgroundColor: "#F8E5E5",
-  },
-  deleteButtonText: {
-    color: "#C34747",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-  emptyState: {
-    backgroundColor: "rgba(255, 255, 255, 0.85)",
-    borderRadius: 24,
-    padding: 28,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 60,
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: "700",
-    color: "#0F2239",
-    marginBottom: 12,
-  },
-  emptySubtitle: {
-    fontSize: 14,
-    color: "#4F5D73",
-    textAlign: "center",
-    lineHeight: 20,
-    marginBottom: 24,
-  },
-  emptyCta: {
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 14,
-    backgroundColor: "#0EA58B",
-  },
-  emptyCtaText: {
-    color: "#F5FFFB",
-    fontSize: 15,
-    fontWeight: "600",
-  },
-});
+const createStyles = (colors: ThemeColors) =>
+  StyleSheet.create({
+    safeArea: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+      paddingHorizontal: 20,
+      paddingTop: 24,
+      paddingBottom: 140,
+    },
+    heading: {
+      fontSize: 30,
+      fontWeight: "700",
+      color: colors.textPrimary,
+      marginBottom: 24,
+    },
+    listContent: {
+      paddingBottom: 160,
+    },
+    groupCard: {
+      backgroundColor: colors.cardElevated,
+      borderRadius: 20,
+      padding: 20,
+      marginBottom: 16,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+      shadowColor: colors.shadowColor,
+      shadowOffset: { width: 0, height: 12 },
+      shadowOpacity: 0.08,
+      shadowRadius: 24,
+      elevation: 8,
+    },
+    groupHeader: {
+      flexDirection: "row",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginBottom: 4,
+    },
+    groupName: {
+      fontSize: 20,
+      fontWeight: "700",
+      color: colors.textPrimary,
+    },
+    groupDetail: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      marginTop: 6,
+    },
+    progressTrack: {
+      height: 12,
+      borderRadius: 12,
+      backgroundColor: colors.progressTrack,
+      marginTop: 16,
+      overflow: "hidden",
+    },
+    progressFill: {
+      height: "100%",
+      borderRadius: 12,
+      backgroundColor: colors.progressFill,
+    },
+    deleteButton: {
+      paddingHorizontal: 14,
+      paddingVertical: 6,
+      borderRadius: 12,
+      backgroundColor: colors.destructiveBg,
+      marginLeft: 12,
+    },
+    deleteButtonText: {
+      color: colors.destructive,
+      fontSize: 13,
+      fontWeight: "600",
+    },
+    emptyState: {
+      backgroundColor: colors.card,
+      borderRadius: 24,
+      padding: 28,
+      alignItems: "center",
+      justifyContent: "center",
+      marginTop: 60,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
+    emptyTitle: {
+      fontSize: 20,
+      fontWeight: "700",
+      color: colors.textPrimary,
+      marginBottom: 12,
+    },
+    emptySubtitle: {
+      fontSize: 14,
+      color: colors.textSecondary,
+      textAlign: "center",
+      lineHeight: 20,
+      marginBottom: 24,
+    },
+    emptyCta: {
+      paddingHorizontal: 24,
+      paddingVertical: 14,
+      borderRadius: 14,
+      backgroundColor: colors.accentPrimary,
+    },
+    emptyCtaText: {
+      color: colors.accentOnPrimary,
+      fontSize: 15,
+      fontWeight: "600",
+    },
+  });
