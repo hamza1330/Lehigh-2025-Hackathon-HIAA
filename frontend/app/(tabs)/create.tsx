@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import { ThemeColors, useTheme } from "../../theme/ThemeProvider";
+import { useRouter } from "expo-router";
 
 type ArchivedGroup = {
   id: string;
@@ -44,11 +45,12 @@ const archivedGroups: ArchivedGroup[] = [
 
 export default function Create() {
   const [groups] = useState(archivedGroups);
-  const { colors, isDark } = useTheme();
+  const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const router = useRouter();
 
   const handleCreatePress = () => {
-    Alert.alert("Create group", "Hook up the creation wizard next.");
+    router.push("/create-group");
   };
 
   const handleJoinPress = () => {

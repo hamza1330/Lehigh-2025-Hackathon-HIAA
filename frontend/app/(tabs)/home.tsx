@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -9,55 +9,30 @@ import {
   Text,
   View,
 } from "react-native";
+import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 import { ThemeColors, useTheme } from "../../theme/ThemeProvider";
-
-type GroupSummary = {
-  id: string;
-  name: string;
-  goalPerMember: number;
-  unit: "hours";
-  youLogged: number;
-  teamLogged: number;
-  teamTarget: number;
-};
-
-const MOCK_GROUPS: GroupSummary[] = [
-  {
-    id: "midterm-study-squad",
-    name: "Midterm Study Squad",
-    goalPerMember: 5,
-    unit: "hours",
-    youLogged: 4,
-    teamLogged: 9,
-    teamTarget: 15,
-  },
-  {
-    id: "workout-buddies",
-    name: "Workout Buddies",
-    goalPerMember: 10,
-    unit: "hours",
-    youLogged: 3,
-    teamLogged: 6,
-    teamTarget: 30,
-  },
-  {
-    id: "coders-unite",
-    name: "Coders Unite",
-    goalPerMember: 8,
-    unit: "hours",
-    youLogged: 1,
-    teamLogged: 4,
-    teamTarget: 40,
-  },
-];
+import {
+  groupSummaries,
+  type GroupSummary,
+} from "../../constants/groups";
 
 export default function Home() {
-  const [groups, setGroups] = useState<GroupSummary[]>(MOCK_GROUPS);
+  const [groups, setGroups] = useState<GroupSummary[]>(() =>
+    groupSummaries.map((group) => ({ ...group }))
+  );
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const router = useRouter();
+
+  useFocusEffect(
+    useCallback(() => {
+      setGroups(groupSummaries.map((group) => ({ ...group })));
+    }, [])
+  );
 
   const handleGroupPress = (group: GroupSummary) => {
-    Alert.alert(group.name, "Full group dashboards are on the roadmap.");
+    router.push({ pathname: "/group/[id]", params: { id: group.id } });
   };
 
   const handleDeletePress = (
@@ -121,6 +96,34 @@ export default function Home() {
                 >
                   <View style={styles.groupHeader}>
                     <Text style={styles.groupName}>{item.name}</Text>
+                    <View
+                      style={[
+                        styles.statusPill,
+                        item.status === "active"
+                          ? styles.statusActive
+                          : item.status === "cooldown"
+                          ? styles.statusCooldown
+                          : styles.statusPaused,
+                      ]}
+                    >
+                      <View
+                        style={[
+                          styles.statusDot,
+                          item.status === "active"
+                            ? styles.dotActive
+                            : item.status === "cooldown"
+                            ? styles.dotCooldown
+                            : styles.dotPaused,
+                        ]}
+                      />
+                      <Text style={styles.statusText}>
+                        {item.status === "active"
+                          ? "Active"
+                          : item.status === "cooldown"
+                          ? "Cooldown"
+                          : "Paused"}
+                      </Text>
+                    </View>
                     <Pressable
                       style={styles.deleteButton}
                       onPress={(event) => handleDeletePress(event, item)}
@@ -129,7 +132,7 @@ export default function Home() {
                     </Pressable>
                   </View>
                   <Text style={styles.groupDetail}>
-                    Goal: {item.goalPerMember} {item.unit} per member
+                    Goal: {formatHours(item.goalPerMember)} {item.unit} per member
                   </Text>
                   <View style={styles.progressTrack}>
                     <View
@@ -140,8 +143,9 @@ export default function Home() {
                     />
                   </View>
                   <Text style={styles.groupDetail}>
-                    You: {item.youLogged}h | Team: {item.teamLogged}h /{" "}
-                    {item.teamTarget}h
+                    You: {formatHours(item.youLogged)}h | Team: {formatHours(
+                      item.teamLogged
+                    )}h / {formatHours(item.teamTarget)}h
                   </Text>
                 </Pressable>
               );
@@ -152,6 +156,11 @@ export default function Home() {
     </SafeAreaView>
   );
 }
+
+const formatHours = (value: number) => {
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? `${rounded}` : rounded.toFixed(1);
+};
 
 const createStyles = (colors: ThemeColors) =>
   StyleSheet.create({
@@ -193,6 +202,48 @@ const createStyles = (colors: ThemeColors) =>
       alignItems: "center",
       justifyContent: "space-between",
       marginBottom: 4,
+    },
+    statusPill: {
+      flexDirection: "row",
+      alignItems: "center",
+      borderRadius: 999,
+      paddingVertical: 4,
+      paddingHorizontal: 10,
+      marginLeft: 8,
+      gap: 6,
+      borderWidth: 1,
+      borderColor: colors.cardBorder,
+    },
+    statusActive: {
+      backgroundColor: "rgba(97, 228, 168, 0.14)",
+      borderColor: "rgba(97, 228, 168, 0.5)",
+    },
+    statusCooldown: {
+      backgroundColor: "rgba(255, 198, 64, 0.14)",
+      borderColor: "rgba(255, 198, 64, 0.5)",
+    },
+    statusPaused: {
+      backgroundColor: "rgba(124, 129, 146, 0.14)",
+      borderColor: "rgba(124, 129, 146, 0.4)",
+    },
+    statusDot: {
+      width: 8,
+      height: 8,
+      borderRadius: 4,
+    },
+    dotActive: {
+      backgroundColor: "#61E4A8",
+    },
+    dotCooldown: {
+      backgroundColor: "#FFC640",
+    },
+    dotPaused: {
+      backgroundColor: "#7C8192",
+    },
+    statusText: {
+      fontSize: 12,
+      fontWeight: "600",
+      color: colors.textSecondary,
     },
     groupName: {
       fontSize: 20,

@@ -20,6 +20,11 @@ function RootStack() {
       />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
+        name="create-group"
+        options={{ headerShown: false, presentation: "card" }}
+      />
+      <Stack.Screen name="group/[id]" options={{ headerShown: false }} />
+      <Stack.Screen
         name="notification/[id]"
         options={{ title: "Notification" }}
       />
