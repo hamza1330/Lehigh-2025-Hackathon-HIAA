@@ -1,4 +1,5 @@
-import { Link } from "expo-router";
+import { CognitoUserAttribute } from "amazon-cognito-identity-js";
+import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   Alert,
@@ -12,17 +13,94 @@ import {
   View,
 } from "react-native";
 
+import { createUserPool, isCognitoConfigured } from "./lib/cognito";
+import { emailToUsername } from "./lib/auth";
+
 export default function CreateAccount() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleCreateAccount = () => {
-    Alert.alert(
-      "Create Account",
-      "We will wire this up to real auth once the backend is ready."
-    );
+  const missingConfig = !isCognitoConfigured();
+
+  const handleCreateAccount = async () => {
+    if (submitting) {
+      return;
+    }
+    if (missingConfig) {
+      setError(
+        "Cognito environment variables are missing. Update your Expo config first.",
+      );
+      return;
+    }
+    if (!email.trim() || !password.trim() || !confirmPassword.trim()) {
+      setError("Please fill out all fields.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long.");
+      return;
+    }
+
+    const pool = createUserPool();
+    if (!pool) {
+      setError("Unable to initialise Cognito user pool.");
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+    const attributes: CognitoUserAttribute[] = [];
+    const emailValue = email.trim().toLowerCase();
+    const username = emailToUsername(emailValue);
+
+    attributes.push(new CognitoUserAttribute({ Name: "email", Value: emailValue }));
+    if (name.trim()) {
+      attributes.push(
+        new CognitoUserAttribute({ Name: "name", Value: name.trim() }),
+      );
+    }
+
+    try {
+      await new Promise((resolve, reject) => {
+        pool.signUp(username, password, attributes, [], (err) => {
+          if (err) {
+            reject(err);
+            return;
+          }
+          resolve(undefined);
+        });
+      });
+
+      Alert.alert(
+        "Account created",
+        "Enter the verification code we just emailed you.",
+        [
+          {
+            text: "Continue",
+            onPress: () =>
+              router.replace({
+                pathname: "/confirm-account",
+                params: { email: emailValue },
+              }),
+          },
+        ],
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unable to register right now.";
+      setError(message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -43,6 +121,14 @@ export default function CreateAccount() {
         </View>
 
         <View style={styles.card}>
+          {missingConfig ? (
+            <Text style={styles.configWarning}>
+              Missing `EXPO_PUBLIC_COGNITO_USER_POOL_ID` or
+              `EXPO_PUBLIC_COGNITO_APP_CLIENT_ID`. Update your Expo env vars and
+              reload the app before continuing.
+            </Text>
+          ) : null}
+
           <View style={styles.fieldGroup}>
             <Text style={styles.label}>Display name</Text>
             <TextInput
@@ -101,8 +187,16 @@ export default function CreateAccount() {
             </Text>
           </View>
 
-          <Pressable style={styles.button} onPress={handleCreateAccount}>
-            <Text style={styles.buttonText}>Create account</Text>
+          {error ? <Text style={styles.errorText}>{error}</Text> : null}
+
+          <Pressable
+            style={[styles.button, (submitting || missingConfig) && styles.buttonDisabled]}
+            onPress={handleCreateAccount}
+            disabled={submitting || missingConfig}
+          >
+            <Text style={styles.buttonText}>
+              {submitting ? "Creating..." : "Create account"}
+            </Text>
           </Pressable>
         </View>
 
@@ -160,6 +254,14 @@ const styles = StyleSheet.create({
     shadowRadius: 16,
     elevation: 10,
   },
+  configWarning: {
+    backgroundColor: "rgba(255,107,107,0.12)",
+    borderRadius: 12,
+    padding: 12,
+    color: "#FF6B6B",
+    marginBottom: 16,
+    fontSize: 13,
+  },
   fieldGroup: {
     marginBottom: 18,
   },
@@ -203,6 +305,15 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     paddingVertical: 16,
     alignItems: "center",
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  errorText: {
+    color: "#FF6B6B",
+    fontSize: 13,
+    marginBottom: 12,
+    textAlign: "center",
   },
   buttonText: {
     fontSize: 17,

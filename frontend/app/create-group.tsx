@@ -13,6 +13,7 @@ import {
   View,
 } from "react-native";
 import { ThemeColors, useTheme } from "../theme/ThemeProvider";
+import { createGroup } from "./lib/api";
 
 export default function CreateGroupScreen() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function CreateGroupScreen() {
   const [durationDays, setDurationDays] = useState("");
   const [targetCadence, setTargetCadence] = useState<"daily" | "weekly">("daily");
   const [targetHours, setTargetHours] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const limitTargetHours = (value: string, cadence: "daily" | "weekly") => {
     const sanitized = value.replace(/[^0-9]/g, "");
@@ -69,11 +71,76 @@ export default function CreateGroupScreen() {
     );
   };
 
-  const handleSubmit = () => {
-    Alert.alert(
-      "Create Group",
-      "This will call the FastAPI backend later and persist to Amazon RDS."
-    );
+  const handleSubmit = async () => {
+    if (submitting) {
+      return;
+    }
+
+    if (!goalName.trim()) {
+      Alert.alert("Create circle", "Please enter a goal name.");
+      return;
+    }
+
+    const hoursValue = parseInt(targetHours, 10);
+    if (!Number.isFinite(hoursValue) || hoursValue <= 0) {
+      Alert.alert(
+        "Create circle",
+        "Enter the number of hours per member for each period."
+      );
+      return;
+    }
+
+    const daysValue = parseInt(durationDays, 10);
+    const duration =
+      Number.isNaN(daysValue) || daysValue <= 0
+        ? targetCadence === "daily"
+          ? 7
+          : 30
+        : daysValue;
+
+    const now = new Date();
+    const end = new Date(now.getTime() + duration * 24 * 60 * 60 * 1000);
+    const timezone =
+      Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC";
+
+    setSubmitting(true);
+    try {
+      const newGroup = await createGroup({
+        name: goalName.trim(),
+        description: members.trim() || null,
+        start_at: now.toISOString(),
+        end_at: end.toISOString(),
+        timezone,
+        period: targetCadence,
+        period_target_minutes: hoursValue * 60,
+      });
+
+      setGoalName("");
+      setMembers("");
+      setInvitedUsers([]);
+      setDurationDays("");
+      setTargetHours("");
+
+      Alert.alert("Circle created", "Your circle is ready to lock in.", [
+        {
+          text: "Open circle",
+          onPress: () =>
+            router.replace({
+              pathname: "/group/[id]",
+              params: { id: newGroup.id },
+            }),
+        },
+        { text: "Stay here", style: "cancel" },
+      ]);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Unable to create the circle right now.";
+      Alert.alert("Create circle", message);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -90,13 +157,13 @@ export default function CreateGroupScreen() {
           <Text style={styles.backLabel}>Back</Text>
         </Pressable>
 
-        <View style={styles.header}>
-          <Text style={styles.title}>Create Group</Text>
-          <Text style={styles.subtitle}>
-            Define the shared goal, invite members, and set the weekly duration.
-            We will connect this form to the backend soon.
-          </Text>
-        </View>
+  <View style={styles.header}>
+    <Text style={styles.title}>Create Group</Text>
+    <Text style={styles.subtitle}>
+      Define the shared goal, invite members, and set the duration for this
+      focus circle. We will invite your teammates soon.
+    </Text>
+  </View>
 
         <View style={styles.formCard}>
           <View style={styles.fieldBlock}>
@@ -238,9 +305,22 @@ export default function CreateGroupScreen() {
             ) : null}
           </View>
 
-          <Pressable style={styles.submitButton} onPress={handleSubmit}>
-            <Text style={styles.submitButtonText}>Create Group</Text>
+          <Pressable
+            style={[
+              styles.submitButton,
+              submitting && styles.submitButtonDisabled,
+            ]}
+            onPress={handleSubmit}
+            disabled={submitting}
+          >
+            <Text style={styles.submitButtonText}>
+              {submitting ? "Creating..." : "Create Group"}
+            </Text>
           </Pressable>
+
+          <Text style={styles.helperFootnote}>
+            We will add member invites in a follow-up release.
+          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -432,9 +512,18 @@ const createStyles = (colors: ThemeColors) =>
       paddingVertical: 18,
       alignItems: "center",
     },
+    submitButtonDisabled: {
+      opacity: 0.7,
+    },
     submitButtonText: {
       color: colors.accentOnPrimary,
       fontSize: 17,
       fontWeight: "700",
+    },
+    helperFootnote: {
+      marginTop: 12,
+      fontSize: 12,
+      color: colors.textMuted,
+      textAlign: "center",
     },
   });

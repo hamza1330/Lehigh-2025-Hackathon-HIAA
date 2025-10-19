@@ -1,0 +1,10 @@
+alembic
+asyncpg
+fastapi
+httpx
+passlib[bcrypt]
+pydantic-settings
+email-validator
+python-jose[cryptography]
+sqlalchemy[asyncio]
+uvicorn[standard]

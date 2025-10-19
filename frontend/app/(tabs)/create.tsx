@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -11,43 +11,58 @@ import {
 } from "react-native";
 import { ThemeColors, useTheme } from "../../theme/ThemeProvider";
 import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 
-type ArchivedGroup = {
+import { listGroups, type GroupListItem } from "../lib/api";
+
+type ArchivedGroupCard = {
   id: string;
   name: string;
-  goalPerMember: string;
+  goalPerMemberHours: number;
   archivedOn: string;
-  iconName: keyof typeof Ionicons.glyphMap;
-  iconColor: string;
-  iconBg: string;
 };
 
-const archivedGroups: ArchivedGroup[] = [
-  {
-    id: "finals",
-    name: "Finals Study Crew",
-    goalPerMember: "5 hours per member",
-    archivedOn: "Oct 10, 2025",
-    iconName: "people-circle",
-    iconColor: "#1B6CF5",
-    iconBg: "rgba(27,108,245,0.12)",
-  },
-  {
-    id: "gym-rats",
-    name: "Gym Rat Pack",
-    goalPerMember: "5 hours per member",
-    archivedOn: "Aug 5, 2025",
-    iconName: "fitness-outline",
-    iconColor: "#F58B1B",
-    iconBg: "rgba(245,139,27,0.12)",
-  },
-];
-
 export default function Create() {
-  const [groups] = useState(archivedGroups);
+  const [groups, setGroups] = useState<ArchivedGroupCard[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { colors } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
   const router = useRouter();
+
+  const loadArchivedGroups = useCallback(async () => {
+    setLoading(true);
+    try {
+      const archived = await listGroups("archived");
+      const formatter = new Intl.DateTimeFormat("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      const mapped: ArchivedGroupCard[] = archived.map((group: GroupListItem) => ({
+        id: group.id,
+        name: group.name,
+        goalPerMemberHours: Math.round((group.period_target_minutes / 60) * 10) / 10,
+        archivedOn: formatter.format(new Date(group.updated_at ?? group.end_at)),
+      }));
+      setGroups(mapped);
+      setError(null);
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Unable to load archived circles right now.";
+      setError(message);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      void loadArchivedGroups();
+    }, [loadArchivedGroups]),
+  );
 
   const handleCreatePress = () => {
     router.push("/create-group");
@@ -58,7 +73,10 @@ export default function Create() {
   };
 
   const handleRestorePress = (groupName: string) => {
-    Alert.alert("Reopen circle", `Bring ${groupName} back in a future update.`);
+    Alert.alert(
+      "Reopen circle",
+      `We'll bring "${groupName}" back in a future update.`
+    );
   };
 
   return (
@@ -92,30 +110,35 @@ export default function Create() {
         </View>
 
         <View style={styles.cardList}>
-          {groups.map((group) => (
-            <View key={group.id} style={styles.card}>
-              <View style={styles.cardRow}>
-                <View
-                  style={[styles.avatar, { backgroundColor: group.iconBg }]}
-                >
-                  <Ionicons name={group.iconName} size={28} color={group.iconColor} />
-                </View>
+          {loading ? (
+            <Text style={styles.cardHint}>Loading archived circles…</Text>
+          ) : error ? (
+            <Text style={styles.cardError}>{error}</Text>
+          ) : groups.length === 0 ? (
+            <Text style={styles.cardHint}>
+              No archived circles yet. Keep locking in!
+            </Text>
+          ) : (
+            groups.map((group) => (
+              <View key={group.id} style={styles.card}>
                 <View style={styles.cardText}>
                   <Text style={styles.cardTitle}>{group.name}</Text>
-                  <Text style={styles.cardDetail}>Goal: {group.goalPerMember}</Text>
+                  <Text style={styles.cardDetail}>
+                    Target: {group.goalPerMemberHours} hours per member
+                  </Text>
                   <Text style={styles.cardMeta}>
                     Archived {group.archivedOn}
                   </Text>
                 </View>
+                <Pressable
+                  style={styles.restoreButton}
+                  onPress={() => handleRestorePress(group.name)}
+                >
+                  <Ionicons name="refresh" size={22} color="#1B6CF5" />
+                </Pressable>
               </View>
-              <Pressable
-                style={styles.restoreButton}
-                onPress={() => handleRestorePress(group.name)}
-              >
-                <Ionicons name="refresh" size={22} color="#1B6CF5" />
-              </Pressable>
-            </View>
-          ))}
+            ))
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -219,6 +242,14 @@ const createStyles = (colors: ThemeColors) =>
     cardList: {
       gap: 16,
     },
+    cardHint: {
+      fontSize: 13,
+      color: colors.textSecondary,
+    },
+    cardError: {
+      fontSize: 13,
+      color: colors.destructive,
+    },
     card: {
       backgroundColor: colors.cardElevated,
       borderRadius: 20,
@@ -234,22 +265,9 @@ const createStyles = (colors: ThemeColors) =>
       shadowOffset: { width: 0, height: 10 },
       elevation: 8,
     },
-    cardRow: {
-      flexDirection: "row",
-      alignItems: "center",
-      flex: 1,
-      marginRight: 12,
-    },
-    avatar: {
-      width: 48,
-      height: 48,
-      borderRadius: 16,
-      marginRight: 14,
-      alignItems: "center",
-      justifyContent: "center",
-    },
     cardText: {
       flex: 1,
+      marginRight: 12,
     },
     cardTitle: {
       fontSize: 18,

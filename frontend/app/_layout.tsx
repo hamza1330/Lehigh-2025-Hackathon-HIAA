@@ -1,4 +1,6 @@
+import "react-native-get-random-values";
 import { Stack } from "expo-router";
+import { AppProvider } from "./providers/AppProvider";
 import { ThemeProvider, useTheme } from "../theme/ThemeProvider";
 
 function RootStack() {
@@ -18,6 +20,7 @@ function RootStack() {
         name="create-account"
         options={{ title: "Create Account" }}
       />
+      <Stack.Screen name="confirm-account" options={{ title: "Confirm Account" }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen
         name="create-group"
@@ -35,7 +38,9 @@ function RootStack() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <RootStack />
+      <AppProvider>
+        <RootStack />
+      </AppProvider>
     </ThemeProvider>
   );
 }

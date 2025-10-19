@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -8,9 +8,13 @@ import {
   StyleSheet,
   Switch,
   Text,
+  TextInput,
   View,
 } from "react-native";
 import { ThemeColors, useTheme } from "../../theme/ThemeProvider";
+import { useRouter } from "expo-router";
+import { useAppContext } from "../providers/AppProvider";
+import { archiveExpiredGroups, updateProfile } from "../lib/api";
 
 type SettingsAction = {
   id: string;
@@ -27,6 +31,81 @@ export default function Settings() {
   const [focusReminders, setFocusReminders] = useState(true);
   const { colors, isDark, setDarkMode: setThemeDarkMode } = useTheme();
   const styles = useMemo(() => createStyles(colors), [colors]);
+  const router = useRouter();
+  const { profile, setProfile, logout } = useAppContext();
+
+  const displayName = profile?.display_name ?? "LockIN member";
+  const email = profile?.email ?? "anonymous@lockin.demo";
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [nameDraft, setNameDraft] = useState(displayName);
+
+  useEffect(() => {
+    setNameDraft(displayName);
+  }, [displayName]);
+
+  const handleSaveDisplayName = async () => {
+    const trimmed = nameDraft.trim();
+    if (!trimmed) {
+      Alert.alert("Display name", "Please enter a valid name.");
+      return;
+    }
+    try {
+      const updated = await updateProfile({ display_name: trimmed });
+      setProfile(updated);
+      Alert.alert("Profile updated", "Your display name has been saved.");
+      setIsEditingName(false);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Unable to update profile.";
+      Alert.alert("Profile", message);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setNameDraft(displayName);
+    setIsEditingName(false);
+  };
+
+  const [maintenanceLoading, setMaintenanceLoading] = useState(false);
+
+  const handleArchiveExpired = useCallback(async () => {
+    if (maintenanceLoading) {
+      return;
+    }
+    setMaintenanceLoading(true);
+    try {
+      const result = await archiveExpiredGroups();
+      Alert.alert(
+        "Maintenance complete",
+        result.archived === 0
+          ? "No circles needed archiving."
+          : `${result.archived} circle(s) archived.`,
+      );
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Unable to run maintenance right now.";
+      Alert.alert("Maintenance", message);
+    } finally {
+      setMaintenanceLoading(false);
+    }
+  }, [maintenanceLoading]);
+
+  const handleSignOut = useCallback(() => {
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Sign Out",
+        style: "destructive",
+        onPress: () => {
+          logout().finally(() => {
+            router.replace("/");
+          });
+        },
+      },
+    ]);
+  }, [logout, router]);
 
   const actions = useMemo<SettingsAction[]>(
     () => [
@@ -73,11 +152,19 @@ export default function Settings() {
         onPress: () => Alert.alert("Feedback", "Open feedback form later."),
       },
       {
+        id: "archive-expired",
+        label: maintenanceLoading ? "Archiving…" : "Archive Expired Groups",
+        description: "Move ended circles to the archive",
+        icon: "archive-outline",
+        accentColor: colors.accentPrimary,
+        onPress: handleArchiveExpired,
+      },
+      {
         id: "sign-out",
         label: "Sign Out",
         icon: "log-out-outline",
         accentColor: colors.accentPrimary,
-        onPress: () => Alert.alert("Sign Out", "Wire up sign-out action later."),
+        onPress: handleSignOut,
       },
       {
         id: "delete-account",
@@ -91,7 +178,7 @@ export default function Settings() {
           ),
       },
     ],
-    [colors.accentPrimary]
+    [colors.accentPrimary, handleArchiveExpired, handleSignOut, maintenanceLoading],
   );
 
   const darkModeStatus = isDark ? "Dark theme active" : "Light theme active";
@@ -122,15 +209,49 @@ export default function Settings() {
             />
           </View>
           <View style={styles.profileText}>
-            <Text style={styles.profileName}>Hamza</Text>
-            <Text style={styles.profileEmail}>hamza@example.com</Text>
+            {isEditingName ? (
+              <>
+                <TextInput
+                  value={nameDraft}
+                  onChangeText={setNameDraft}
+                  style={styles.editInput}
+                  placeholder="Display name"
+                  placeholderTextColor={colors.textSecondary}
+                />
+                <View style={styles.editActions}>
+                  <Pressable
+                    style={styles.editActionButton}
+                    onPress={handleCancelEdit}
+                  >
+                    <Text style={styles.editActionText}>Cancel</Text>
+                  </Pressable>
+                  <Pressable
+                    style={[
+                      styles.editActionButton,
+                      styles.editActionPrimary,
+                    ]}
+                    onPress={handleSaveDisplayName}
+                  >
+                    <Text style={styles.editActionPrimaryText}>Save</Text>
+                  </Pressable>
+                </View>
+                <Text style={styles.profileEmail}>{email}</Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.profileName}>{displayName}</Text>
+                <Text style={styles.profileEmail}>{email}</Text>
+              </>
+            )}
           </View>
-          <Pressable
-            style={styles.editButton}
-            onPress={() => Alert.alert("Edit Profile", "Open profile editor soon.")}
-          >
-            <Text style={styles.editButtonText}>Edit</Text>
-          </Pressable>
+          {!isEditingName ? (
+            <Pressable
+              style={styles.editButton}
+              onPress={() => setIsEditingName(true)}
+            >
+              <Text style={styles.editButtonText}>Edit</Text>
+            </Pressable>
+          ) : null}
         </View>
 
         <View style={styles.toggleGroup}>
@@ -319,6 +440,42 @@ const createStyles = (colors: ThemeColors) =>
       fontSize: 14,
       color: colors.textSecondary,
       marginTop: 4,
+    },
+    editInput: {
+      width: "100%",
+      borderWidth: 1,
+      borderColor: colors.divider,
+      borderRadius: 12,
+      paddingHorizontal: 14,
+      paddingVertical: 10,
+      fontSize: 15,
+      color: colors.textPrimary,
+      marginBottom: 10,
+      backgroundColor: colors.background,
+    },
+    editActions: {
+      flexDirection: "row",
+      gap: 12,
+      marginBottom: 8,
+    },
+    editActionButton: {
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 12,
+      backgroundColor: colors.chipBackground,
+    },
+    editActionPrimary: {
+      backgroundColor: colors.accentPrimary,
+    },
+    editActionText: {
+      color: colors.textPrimary,
+      fontSize: 13,
+      fontWeight: "600",
+    },
+    editActionPrimaryText: {
+      color: colors.accentOnPrimary,
+      fontSize: 13,
+      fontWeight: "700",
     },
     editButton: {
       paddingHorizontal: 18,
