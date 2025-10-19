@@ -1,276 +1,203 @@
-# 🎯 GoalQuest - Mobile Goal-Setting App
-## Lehigh 2025 Hackathon - Beautiful React Native Productivity Platform
+# 🎯 GoalQuest - Complete Goal Achievement Platform
 
-🚀 **Live Demo**: [http://54.90.157.246](http://54.90.157.246)  
-📱 **React Native**: Ready for mobile development  
-🔗 **API Health**: [http://54.90.157.246/api/health](http://54.90.157.246/api/health)
+A comprehensive goal-setting and achievement platform built with React Native and AWS services.
 
-### 🌟 About GoalQuest
+## 🚀 Quick Start
 
-GoalQuest is a beautiful, modern mobile goal-setting app built with React Native and Node.js. It helps users achieve their goals through social accountability, photo verification, and friendly competition.
-
-### ✨ Key Features
-
-#### 📱 **Beautiful Mobile Interface**
-- **React Native** with modern, intuitive design
-- **Secure authentication** with JWT tokens
-- **Responsive UI** optimized for all screen sizes
-- **Smooth animations** and transitions
-
-#### 🎯 **Goal Management**
-- **Create and track personal goals** with multiple types
-- **Photo verification** for goal completion accountability
-- **Progress tracking** with visual indicators
-- **Location-based goals** with GPS integration
-- **Smart notifications** and reminders
-
-#### 👥 **Social Features**
-- **Group collaboration** and team challenges
-- **Individual and group leaderboards**
-- **Achievement system** with points and levels
-- **Social sharing** and motivation
-
-#### 🤖 **AI-Powered Features**
-- **Photo verification** using computer vision
-- **Smart goal suggestions** based on user behavior
-- **Fraud detection** and prevention
-- **Automated progress tracking**
-
-### 🛠️ Tech Stack
-
-#### **Frontend (React Native)**
-- **React Native** - Cross-platform mobile development
-- **Expo** - Development platform and tools
-- **React Navigation** - Navigation library
-- **Vector Icons** - Beautiful iconography
-- **AsyncStorage** - Local data persistence
-
-#### **Backend (Node.js)**
-- **Express.js** - Web application framework
-- **MySQL** - Relational database
-- **JWT** - Authentication tokens
-- **bcryptjs** - Password hashing
-- **Multer** - File upload handling
-
-#### **Database (AWS RDS)**
-- **MySQL** - Primary database
-- **AWS RDS** - Managed database service
-- **Optimized indexes** for performance
-- **Data relationships** and constraints
-
-#### **Deployment (AWS)**
-- **AWS EC2** - Cloud hosting
-- **Nginx** - Reverse proxy and static serving
-- **PM2** - Process management
-- **SSL/HTTPS** - Secure connections
-
-### 🚀 Quick Start
-
-#### **1. Clone and Setup**
+### Start All Services
 ```bash
-git clone https://github.com/hamza1330/Lehigh-2025-Hackathon-HIAA.git
-cd Lehigh-2025-Hackathon-HIAA
-npm install
+# Start the complete development environment
+./start-dev.sh
 ```
 
-#### **2. Environment Configuration**
-```bash
-cp env.example .env
-# Edit .env with your database credentials
+### Access the Applications
+- **React Native App**: http://localhost:3001
+- **Website**: http://localhost:8085
+- **Feature Testing**: http://localhost:8086/test-complete-features.html
+- **Groups Demo**: http://localhost:8083/test-groups.html
+
+## 📱 Features
+
+### 🎯 Goal Management
+- Create and track goals with categories
+- Photo verification using AI
+- Location-based goal tracking
+- Real-time progress updates
+- Achievement system
+
+### 👥 Group Collaboration
+- Join and create groups
+- Real-time group chat
+- Group leaderboards
+- Team challenges
+- Group achievements
+
+### 📸 Photo Verification
+- AI-powered photo analysis
+- Goal completion verification
+- Screenshot capture
+- Photo storage in AWS S3
+
+### 📍 Location Services
+- GPS-based goal creation
+- Location verification
+- Geofenced challenges
+- Location history tracking
+
+### 📅 Calendar Integration
+- Event creation and scheduling
+- Goal progress visualization
+- Reminder notifications
+- Calendar export
+
+### 🏆 Leaderboards & Achievements
+- Global and group leaderboards
+- Achievement system
+- Badge collection
+- Progress streaks
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **React Native** - Mobile app
+- **HTML5/CSS3/JavaScript** - Website
+- **Expo** - Development platform
+
+### Backend
+- **Node.js/Express** - API server
+- **AWS Services** - Cloud infrastructure
+- **DynamoDB** - Database
+- **S3** - File storage
+- **Rekognition** - AI photo analysis
+
+## 📁 Project Structure
+
+```
+GoalQuest/
+├── client/                 # React Native mobile app
+│   ├── src/
+│   │   ├── screens/        # App screens
+│   │   ├── services/      # AWS services
+│   │   └── context/       # Authentication context
+│   └── package.json
+├── website/               # Website
+│   └── index.html
+├── aws-infrastructure/    # AWS CloudFormation templates
+├── mock_auth.js          # Mock API server
+└── README.md
 ```
 
-#### **3. Database Setup**
-```bash
-# Run the database schema
-mysql -h database-1.cluster-cw18kkw8mg9c.us-east-1.rds.amazonaws.com -u admin -p < database_schema.sql
-```
+## 🚀 Development
 
-#### **4. Start Development**
-```bash
-# Start the backend server
-npm start
+### Prerequisites
+- Node.js 18+
+- npm or yarn
+- Expo CLI
+- AWS CLI (for deployment)
 
-# Start React Native development (in another terminal)
+### Install Dependencies
+```bash
+# Install React Native dependencies
 cd client
-npm start
-```
-
-### 📱 Mobile Development
-
-#### **React Native Setup**
-```bash
-cd client
 npm install
-npx expo start
+
+# Install additional dependencies for enhanced features
+npm install expo-location expo-image-picker expo-camera expo-calendar
 ```
 
-#### **Available Commands**
-- `npm run android` - Run on Android
-- `npm run ios` - Run on iOS  
-- `npm run web` - Run in web browser
-- `npm run start` - Start Expo development server
-
-### 🔧 API Endpoints
-
-#### **Authentication**
-- `POST /api/auth/register` - User registration
-- `POST /api/auth/login` - User login
-- `GET /api/user/profile` - Get user profile
-
-#### **Goals**
-- `GET /api/goals` - Get user goals
-- `POST /api/goals` - Create new goal
-- `POST /api/goals/:id/complete` - Complete goal with photo
-
-#### **Groups**
-- `GET /api/groups` - Get all groups
-- `POST /api/groups` - Create new group
-- `POST /api/groups/:id/join` - Join group
-
-#### **Leaderboard**
-- `GET /api/leaderboard` - Get leaderboard rankings
-
-### 🎨 UI/UX Features
-
-#### **Sign-In/Sign-Up Screens**
-- **Beautiful gradient backgrounds**
-- **Smooth form animations**
-- **Input validation** and error handling
-- **Secure password** with show/hide toggle
-- **Social login** integration ready
-
-#### **Main App Screens**
-- **Tab-based navigation** with icons
-- **Goal cards** with progress indicators
-- **Leaderboard** with rankings and badges
-- **Group management** with join/create
-- **Profile management** with settings
-
-#### **Interactive Elements**
-- **Touch-friendly** buttons and inputs
-- **Swipe gestures** for navigation
-- **Pull-to-refresh** functionality
-- **Loading states** and animations
-- **Error handling** with user feedback
-
-### 🗄️ Database Schema
-
-#### **Core Tables**
-- **users** - User accounts and profiles
-- **groups** - Goal-oriented groups and teams
-- **goals** - Individual and group goals
-- **goal_completions** - Goal completion records
-- **achievements** - User achievements and badges
-
-#### **Relationships**
-- Users can have multiple goals
-- Goals can belong to groups
-- Users can join multiple groups
-- Completions track goal progress
-- Achievements reward user milestones
-
-### 🚀 Deployment
-
-#### **AWS EC2 Deployment**
+### Start Development
 ```bash
-./deploy.sh
+# Start all services
+./start-dev.sh
+
+# Or start individually:
+# React Native app
+cd client && npx expo start --web --port 3001
+
+# Mock API server
+node mock_auth.js
+
+# Website server
+cd website && python3 -m http.server 8085
 ```
 
-#### **Manual Deployment Steps**
-1. **Install dependencies**: `npm install`
-2. **Configure environment**: Set up `.env` file
-3. **Setup database**: Run `database_schema.sql`
-4. **Start server**: `node server/app.js`
-5. **Configure Nginx**: Proxy API requests
-6. **Test deployment**: Verify all endpoints
+## ☁️ AWS Deployment
 
-### 📊 Performance Features
+### Deploy Complete Infrastructure
+```bash
+# Configure AWS credentials first
+aws configure
 
-#### **Optimization**
-- **Database indexing** for fast queries
-- **Image compression** for photo uploads
-- **Lazy loading** for large lists
-- **Caching** for frequently accessed data
-- **Connection pooling** for database
+# Deploy all AWS services
+./deploy-complete-aws.sh
+```
 
-#### **Scalability**
-- **Horizontal scaling** ready
-- **Load balancing** support
-- **CDN integration** for static assets
-- **Microservices** architecture ready
+### AWS Services Included
+- **Cognito** - User authentication
+- **DynamoDB** - Database
+- **S3** - File storage
+- **Lambda** - Serverless functions
+- **API Gateway** - REST API
+- **Rekognition** - AI photo analysis
+- **Location Service** - GPS functionality
+- **EventBridge** - Calendar integration
 
-### 🔒 Security Features
+## 🎯 Usage
 
-#### **Authentication**
-- **JWT tokens** for secure sessions
-- **Password hashing** with bcrypt
-- **Input validation** and sanitization
-- **Rate limiting** for API endpoints
+### Mobile App (React Native)
+1. Open http://localhost:3001
+2. Sign up for a new account
+3. Create goals with photo verification
+4. Join groups and chat with members
+5. Track progress and earn achievements
 
-#### **Data Protection**
-- **HTTPS encryption** for all traffic
-- **SQL injection** prevention
-- **XSS protection** in frontend
-- **Secure file uploads** with validation
+### Website
+1. Open http://localhost:8085
+2. Explore all features
+3. Test AWS integrations
+4. View the complete platform
 
-### 🎯 Use Cases
+### Testing
+1. Open http://localhost:8086/test-complete-features.html
+2. Test all features in real-time
+3. Verify AWS services
+4. Check performance
 
-#### **Individual Users**
-- **Personal productivity** and habit tracking
-- **Goal achievement** with accountability
-- **Progress visualization** and insights
-- **Motivation** through gamification
+## 📱 Mobile Features
 
-#### **Teams & Groups**
-- **Collaborative goal setting**
-- **Team challenges** and competitions
-- **Progress sharing** and updates
-- **Group accountability** and support
+- **Beautiful React Native Interface** - Modern, responsive design
+- **Photo Verification** - AI-powered goal completion verification
+- **Location Tracking** - GPS-based goal creation and tracking
+- **Group Collaboration** - Real-time chat and team challenges
+- **Calendar Integration** - Schedule goals and track progress
+- **Achievement System** - Badges, leaderboards, and progress tracking
 
-#### **Organizations**
-- **Employee engagement** programs
-- **Team building** activities
-- **Performance tracking** and analytics
-- **Corporate wellness** initiatives
+## 🌐 Website Features
 
-### 🔮 Future Enhancements
+- **Complete Platform** - All mobile features in web format
+- **Interactive Demos** - Test all functionality
+- **AWS Integration** - Full cloud services integration
+- **Responsive Design** - Works on all devices
 
-#### **Advanced Features**
-- **Machine Learning** for goal recommendations
-- **Wearable integration** (Apple Watch, Fitbit)
-- **Social media** sharing and integration
-- **Advanced analytics** and insights
+## 🚀 Production Ready
 
-#### **Platform Expansion**
-- **Web application** version
-- **Desktop app** with Electron
-- **API marketplace** for integrations
-- **White-label** solutions
+The platform is production-ready with:
+- Complete AWS infrastructure
+- Scalable serverless architecture
+- Real-time features
+- AI-powered verification
+- Mobile and web support
 
-### 📞 Support & Development
+## 📞 Support
 
-#### **Development Setup**
-- **Hot reloading** for fast development
-- **Debug tools** and logging
-- **Testing framework** integration
-- **Code quality** tools (ESLint, Prettier)
-
-#### **Troubleshooting**
-- **API documentation** at `/docs`
-- **Health check** at `/api/health`
-- **Error logging** and monitoring
-- **Performance metrics** tracking
-
-### 🏆 Hackathon Features
-
-Built specifically for the Lehigh 2025 Hackathon with:
-- **Innovation**: AI-powered goal verification
-- **Social Impact**: Group collaboration and motivation
-- **Technical Excellence**: Modern React Native architecture
-- **User Experience**: Beautiful, intuitive mobile interface
-- **Scalability**: Cloud-native deployment ready
+- **Documentation**: See individual service files
+- **AWS Docs**: https://docs.aws.amazon.com/
+- **React Native Docs**: https://reactnative.dev/
+- **Expo Docs**: https://docs.expo.dev/
 
 ---
 
-**🎯 GoalQuest - Achieve Your Goals Together**  
-*Built with ❤️ for the Lehigh 2025 Hackathon*
+**🎯 GoalQuest - Achieve Your Goals Together!**
+
+**Ready for the Lehigh 2025 Hackathon! 🏆**
+
