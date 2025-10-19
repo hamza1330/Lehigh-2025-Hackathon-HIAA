@@ -12,6 +12,10 @@ export default function RootLayout() {
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="create-account" options={{ title: "Create Account" }} />
+      <Stack.Screen
+        name="home"
+        options={{ headerShown: false, contentStyle: { backgroundColor: "#E9F5F0" } }}
+      />
     </Stack>
   );
 }
