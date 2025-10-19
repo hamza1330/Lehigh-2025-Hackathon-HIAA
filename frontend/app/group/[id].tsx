@@ -2,6 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Modal,
   Pressable,
   SafeAreaView,
@@ -148,6 +149,13 @@ export default function GroupDetailScreen() {
     setLockState("running");
   };
 
+  const handleSchedule = () => {
+    Alert.alert(
+      "Schedule session",
+      "We will let you pick a future lock-in time and notify your circle once the backend integration is ready."
+    );
+  };
+
   const handleClockOut = () => {
     if (!groupData || !startTime) {
       setLockState("summary");
@@ -274,23 +282,30 @@ export default function GroupDetailScreen() {
                 </Text>
               </View>
             </View>
-            <Pressable
-              style={[
-                styles.clockButton,
-                lockState !== "idle" && { opacity: 0.6 },
-              ]}
-              onPress={handleClockIn}
-              disabled={lockState !== "idle"}
-            >
-              <Ionicons name="timer-outline" size={20} color="#FFFFFF" />
-              <Text style={styles.clockButtonText}>
-                {lockState === "running"
-                  ? "Currently Locked In"
-                  : lockState === "summary"
-                  ? "Reviewing Session"
-                  : "Clock In"}
-              </Text>
-            </Pressable>
+            <View style={styles.heroActions}>
+              <Pressable
+                style={[
+                  styles.clockButton,
+                  lockState !== "idle" && { opacity: 0.6 },
+                ]}
+                onPress={handleClockIn}
+                disabled={lockState !== "idle"}
+              >
+                <Ionicons name="timer-outline" size={20} color="#FFFFFF" />
+                <Text style={styles.clockButtonText}>
+                  {lockState === "running"
+                    ? "Currently Locked In"
+                    : lockState === "summary"
+                    ? "Reviewing Session"
+                    : "Clock In"}
+                </Text>
+              </Pressable>
+
+              <Pressable style={styles.scheduleButton} onPress={handleSchedule}>
+                <Ionicons name="calendar-outline" size={18} color="#1B2F58" />
+                <Text style={styles.scheduleButtonText}>Schedule</Text>
+              </Pressable>
+            </View>
           </View>
         </View>
 
@@ -534,9 +549,13 @@ const createStyles = (colors: ThemeColors) =>
       fontWeight: "600",
       fontSize: 13,
     },
-    clockButton: {
+    heroActions: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 12,
       marginTop: 18,
-      alignSelf: "flex-start",
+    },
+    clockButton: {
       flexDirection: "row",
       alignItems: "center",
       gap: 10,
@@ -549,6 +568,20 @@ const createStyles = (colors: ThemeColors) =>
       color: "#FFFFFF",
       fontSize: 15,
       fontWeight: "700",
+    },
+    scheduleButton: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 8,
+      paddingVertical: 12,
+      paddingHorizontal: 18,
+      borderRadius: 999,
+      backgroundColor: "#FFFFFF",
+    },
+    scheduleButtonText: {
+      fontSize: 14,
+      fontWeight: "600",
+      color: "#1B2F58",
     },
     tabBar: {
       flexDirection: "row",
